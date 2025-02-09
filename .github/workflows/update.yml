@@ -18,10 +18,8 @@ jobs:
           
       - name: Install Dependencies
         run: |
-          pip uninstall -y numpy pandas  # Alte Versionen entfernen
-          pip install numpy==1.26.4 --no-cache-dir
-          pip install pandas==2.2.2 --no-cache-dir
-          pip install -r requirements.txt
+          pip install --upgrade pip
+          pip install --no-cache-dir --force-reinstall -r requirements.txt
           
       - name: Run Comparison
         env:
