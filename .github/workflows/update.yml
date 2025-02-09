@@ -23,9 +23,8 @@ jobs:
         pip install --no-cache-dir numpy==1.26.4 pandas==2.0.3
 
     - name: Run Comparison
-      env:
-        LOAN_BALANCE: ${{ secrets.LOAN_BALANCE }}
       run: |
+        python update_loan.py
         python compare_balances.py
 
     - name: Check File Existence
