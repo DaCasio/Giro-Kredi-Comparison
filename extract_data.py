@@ -1,5 +1,4 @@
 import pandas as pd
-import os
 
 def extract_data():
     url = "https://docs.google.com/spreadsheets/d/1syH5ntimv_5juHGOZo0LUgLO1Jk2kEQjhno8Kl21jzw/export?format=csv"
