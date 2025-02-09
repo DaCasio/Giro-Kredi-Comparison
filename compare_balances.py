@@ -14,7 +14,12 @@ def get_target_month(loan_balance):
     return "Nicht vorhersagbar"
 
 if __name__ == "__main__":
-    current_loan = float(os.environ['LOAN_BALANCE'])
+    try:
+        current_loan = float(os.environ['LOAN_BALANCE'])
+    except ValueError:
+        print("Fehler: LOAN_BALANCE muss eine Zahl sein")
+        current_loan = 0  # Fallback-Wert
+    
     result = get_target_month(current_loan)
     
     output = {
