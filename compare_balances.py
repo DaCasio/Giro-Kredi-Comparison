@@ -11,13 +11,6 @@ def get_target_month(loan_balance):
 if __name__ == "__main__":
     current_loan = 10000  # Wird durch GitHub Secret ersetzt
     result = get_target_month(current_loan)
-    
-    output = {
-        "frames": [{
-            "text": f"Kontoüberhang: {result}",
-            "icon": "i17911"  # Kalender-Icon
-        }]
-    }
-    
+    output = {"frames": [{"text": f"Kontoüberhang: {result}", "icon": "i17911"}]}
     with open('lametric.json', 'w') as f:
         json.dump(output, f)
