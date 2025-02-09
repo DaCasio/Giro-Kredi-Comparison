@@ -10,8 +10,12 @@ def get_target_month(loan_balance):
     if not months or not balances:
         return "Datenfehler"
     
+    print(f"DEBUG: Loan balance to compare: {loan_balance}")
+    print(f"DEBUG: Balances from sheet: {balances}")
+    
     # Durchlaufen der Kontostände und Vergleich mit der Restschuld
     for idx, balance in enumerate(balances):
+        print(f"DEBUG: Comparing balance {balance} with loan balance {loan_balance}")
         if balance > loan_balance:
             return months[idx]
     
