@@ -1,4 +1,6 @@
-# extract_data.py (MIT FEHLERHANDLING)
+import pandas as pd
+import os
+
 def extract_data():
     url = "https://docs.google.com/spreadsheets/d/1syH5ntimv_5juHGOZo0LUgLO1Jk2kEQjhno8Kl21jzw/export?format=csv"
     try:
@@ -9,3 +11,7 @@ def extract_data():
     except Exception as e:
         print(f"Fehler beim Laden der Daten: {str(e)}")
         return [], []
+
+if __name__ == "__main__":
+    months, balances = extract_data()
+    print(f"Monate: {months}\nKontostände: {balances}")
