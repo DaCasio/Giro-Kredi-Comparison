@@ -1,38 +1,33 @@
-name: Daily Balance Check
+name: Daily Update
 
 on:
   schedule:
-    - cron: '0 8 * * *'  # Täglich um 08:00 UTC ausführen
-  workflow_dispatch:     # Manuelle Ausführung ermöglichen
+    - cron: '0 6 * * *'  # Täglich 06:00 UTC
+  workflow_dispatch:
 
 jobs:
-  compare-balances:
+  update:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
-
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
-
-    - name: Install Dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pandas gitpython
-
-    - name: Run Comparison
-      env:
-        CURRENT_LOAN: ${{ secrets.CURRENT_LOAN_BALANCE }}
-      run: |
-        python -c "from compare_balances import compare_balances; compare_balances($CURRENT_LOAN)"
-
-    - name: Commit Changes
-      run: |
-        git config --global user.name "GitHub Actions"
-        git config --global user.email "actions@github.com"
-        git add lametric_output.json
-        git commit -m "Update loan comparison data" || echo "No changes to commit"
-        git push
+      - uses: actions/checkout@v3
+      
+      - name: Python Setup
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
+      - name: Install Dependencies
+        run: pip install -r requirements.txt
+        
+      - name: Run Comparison
+        env:
+          LOAN_BALANCE: ${{ secrets.LOAN_BALANCE }}
+        run: python compare_balances.py
+        
+      - name: Commit Changes
+        run: |
+          git config --global user.name "GitHub Bot"
+          git config --global user.email "github-actions@example.com"
+          git add lametric.json
+          git commit -m "Update: $(date +'%Y-%m-%d %H:%M')" || exit 0
+          git push
