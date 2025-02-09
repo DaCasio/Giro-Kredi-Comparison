@@ -16,6 +16,7 @@ def get_target_month(loan_balance):
 
 if __name__ == "__main__":
     try:
+        from datetime import date
         current_loan = darlehens_entwicklung(date.today())
     except Exception as e:
         print(f"Fehler beim Berechnen der Restschuld: {str(e)}")
