@@ -12,7 +12,10 @@ def extract_data():
         
         # Extrahieren der Monatsnamen und Kontostände aus Spalte A
         months = data.iloc[0, 0].split(",")  # A1: Monatsnamen durch Kommas getrennt
-        balances = [float(value) for value in data.iloc[1, 0].split(",")]  # A2: Kontostände durch Kommas getrennt
+        balances = [float(value.replace(",", "").strip()) for value in data.iloc[1, 0].split(",")]  # A2: Kontostände
+        
+        print(f"DEBUG: Extracted months: {months}")
+        print(f"DEBUG: Extracted balances: {balances}")
         
         return months, balances
     except Exception as e:
