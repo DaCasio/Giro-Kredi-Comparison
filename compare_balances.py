@@ -1,31 +1,23 @@
 import json
 from extract_data import extract_data
 
-def compare_balances(current_loan_balance):
-    monthly_names, monthly_balances = extract_data()
-    
-    for i, balance in enumerate(monthly_balances):
-        if balance > current_loan_balance:
-            return monthly_names[i]
-    
-    return "Kein Monat gefunden, in dem der Kontostand den Darlehensstand übersteigt."
+def get_target_month(loan_balance):
+    months, balances = extract_data()
+    for idx, balance in enumerate(balances):
+        if balance > loan_balance:
+            return months[idx]
+    return "Nicht vorhersagbar"
 
 if __name__ == "__main__":
-    # Beispielwert für den aktuellen Darlehensstand
-    current_loan_balance = 10000
+    current_loan = 10000  # Wird durch GitHub Secret ersetzt
+    result = get_target_month(current_loan)
     
-    result = compare_balances(current_loan_balance)
-    
-    # JSON-Struktur für Lametric
     output = {
-        "frames": [
-            {
-                "text": f"Der Kontostand übersteigt den Darlehensstand im Monat: {result}",
-                "icon": "i12345"  # Hier ein passendes Icon einfügen
-            }
-        ]
+        "frames": [{
+            "text": f"Kontoüberhang: {result}",
+            "icon": "i17911"  # Kalender-Icon
+        }]
     }
-
-    # JSON-Datei erstellen
-    with open('lametric_output.json', 'w') as f:
+    
+    with open('lametric.json', 'w') as f:
         json.dump(output, f)
