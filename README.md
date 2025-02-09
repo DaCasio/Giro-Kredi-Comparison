@@ -1,54 +1,86 @@
-# Giro-Kredi-Comparison
+Giro-Kredi-Comparison
+Dieses Projekt vergleicht den aktuellen Stand eines Girokontos – extrahiert aus einem öffentlichen Google Sheet – mit der taggenauen Restschuld eines Darlehens, die mit Hilfe von Python berechnet wird. Das Ergebnis wird als JSON-Datei (lametric.json) ausgegeben, die beispielsweise in einer LaMetric-MyData-App angezeigt werden kann.
+Projektstruktur
 
-Dieses Projekt vergleicht den Kontostand aus einem öffentlichen Google Sheets-Dokument mit dem aktuellen Darlehensstand und ermittelt den Monat, in dem der Kontostand den Darlehensstand übersteigt. Die Ergebnisse werden in einer JSON-Datei gespeichert, die von der Lametric My Data App gelesen werden kann.
+    update_loan.py
+    Berechnet die tägliche Restschuld des Darlehens. Es werden Startdatum, Darlehenskapital, Monatsrate und Zinssatz verwendet. Die Ergebnisstruktur wird auch in einer JSON-Datei namens darlehen.json abgelegt.
+    extract_data.py
+    Lädt das Google Sheet (im CSV-Format) aus dem Tab „dat“ (via URL mit Parameter &gid=0) und extrahiert aus Zeile 1 die Monatsnamen sowie aus Zeile 2 die zugehörigen Kontostände.
+    Dabei werden Tausendertrennzeichen entfernt und das Dezimaltrennzeichen (Komma) in einen Punkt umgewandelt, sodass die Werte als Floats interpretiert werden.
+    compare_balances.py
+    Liest die aktuellen Daten aus dem Google Sheet (über extract_data.py) und berechnet die aktuelle Restschuld (über update_loan.py). Anschließend durchläuft es die Liste der extrahierten Kontostände und ermittelt den ersten Monat, in dem der Kontostand die Restschuld übersteigt. Das Ergebnis wird als JSON (lametric.json) ausgegeben.
+    .github/workflows/update.yml
+    Ein GitHub Actions-Workflow, der täglich (und per manueller Auslösung) ausgeführt wird. Er führt update_loan.py und compare_balances.py aus, aktualisiert lametric.json und commitet ggf. die Änderung zurück in das Repository.
+    requirements.txt
+    Listet die Python-Pakete (z. B. numpy und pandas) mit festgelegten Versionen auf, die für das Projekt benötigt werden.
 
-## Voraussetzungen
+Voraussetzungen
 
-- Python 3.x
-- `pandas` Bibliothek
+    Python 3.10 oder höher
+    Abhängigkeiten gemäß requirements.txt (numpy==1.26.4, pandas==2.0.3)
+    Ein öffentlich zugängliches Google Sheet mit zwei relevanten Zeilen:
+        Zeile 1 (A1 bis BO1): Enthält die Monatsnamen (z. B. "Jun25,Jul25,...").
+        Zeile 2 (A2 bis BO2): Enthält die zugehörigen Kontostände als Zahlen (mit Tausendertrennzeichen und Dezimal-Komma im deutschen Format).
+    Ein LaMetric-Display oder eine MyData-App, die JSON-Daten von GitHub abrufen kann.
 
-## Installation
+Funktionsweise
 
-1. **Klonen Sie das Repository:**
+    Datenextraktion:
+    Mit extract_data.py wird der CSV-Export des Google Sheets aus dem Tab „dat“ (URL:
+    https://docs.google.com/spreadsheets/d/1syH5ntimv_5juHGOZo0LUgLO1Jk2kEQjhno8Kl21jzw/export?format=csv&gid=0) geladen.
+        Die erste Zeile wird anhand von Kommas in eine Liste von Monatsnamen zerlegt.
+        Die zweite Zeile wird ebenfalls anhand von Kommas getrennt, wobei jedes Element bereinigt (Tausenderpunkte entfernen, Dezimalkomma in einen Punkt umwandeln) und in einen Float konvertiert wird.
+    Darlehensberechnung:
+    Das Skript update_loan.py berechnet anhand definierter Parameter (Startkapital, Monatsrate, Zinssatz etc.) die tägliche Weiterentwicklung der Restschuld bis zum aktuellen Datum.
+    Vergleich:
+    Mit compare_balances.py wird die Restschuld (z. B. 26122) mit den aus dem Google Sheet extrahierten Kontoständen verglichen. Der erste Monat, in dem der extrahierte Kontostand die Restschuld übersteigt, wird ermittelt und als Ergebnis (z. B. "Mär27") ausgegeben.
+    JSON-Ausgabe:
+    Das Ergebnis wird in einer JSON-Struktur abgelegt:
 
-git clone https://github.com/IhrGitHubName/Giro-Kredi-Comparison.git
+    json
+    {
+      "frames": [
+        {
+          "text": "Kontoüberhang: Mär27",
+          "icon": "i17911"
+        }
+      ]
+    }
 
+    Automatisierung via GitHub Actions:
+    Der Workflow (.github/workflows/update.yml) führt täglich die Aktualisierung durch, sodass die JSON-Datei immer den aktuell ermittelten Monat anzeigt.
 
-2. **Installieren Sie die benötigten Pakete:**
+Installation & Nutzung
 
-pip install pandas
+    Repository klonen:
 
+bash
+git clone https://github.com/DaCasio/Giro-Kredi-Comparison.git
+cd Giro-Kredi-Comparison
 
-## Nutzung
+Abhängigkeiten installieren:
 
-1. **Daten extrahieren:**
+bash
+pip install -r requirements.txt
 
-python extract_data.py
+Lokale Ausführung zur Überprüfung:
 
+    bash
+    python update_loan.py
+    python compare_balances.py
+    cat lametric.json
 
-2. **Vergleich durchführen:**
+    GitHub Actions:
+    Der Workflow wird automatisch täglich um 06:00 UTC (und bei manueller Auslösung) ausgeführt. Die erzeugte lametric.json kann direkt von der LaMetric MyData-App oder einem anderen Client abgerufen werden.
 
-python compare_balances.py
+Anpassungen & Hinweise
 
+    Google Sheet Formatierung:
+    Achten Sie darauf, dass im Google Sheet die Werte in einem einzigen Tab (z. B. dem Tab „dat“) hinterlegt sind. Beim Export liegen dann alle Monatsnamen und entsprechenden Werte in der ersten Spalte, getrennt durch Kommas.
+    Zahlenformat:
+    Bei der Verarbeitung werden Tausendertrennzeichen entfernt und das Komma als Dezimaltrennzeichen umgewandelt. Falls andere Formate vorliegen, passen Sie den Code in extract_data.py gegebenenfalls an.
+    Debugging:
+    Bei Problemen wurden Debug-Ausgaben in den Skripten eingebaut, die über die GitHub Actions-Logs eingesehen werden können.
 
-- Der aktuelle Darlehensstand muss in der Datei `compare_balances.py` angepasst werden.
-
-3. **Ergebnisse anzeigen:**
-- Die Ergebnisse werden in `lametric_output.json` gespeichert, die von der Lametric My Data App gelesen werden kann.
-
-## Lizenz
-
-Dieses Projekt ist unter der MIT-Lizenz lizenziert. Siehe die `LICENSE`-Datei für Details.
-
-LICENSE
-
-MIT License
-
-Copyright (c) [Jahr] [Ihr Name]
-
-Erlaubnis hiermit, kostenlos, jeder Person, die eine Kopie dieser Software und der zugehörigen Dokumentationsdateien (die "Software") erhält, ohne Einschränkung mit der Software zu handeln, einschließlich, aber nicht beschränkt auf, die Rechte, die Software zu verwenden, zu kopieren, zu modifizieren, zu fusionieren, zu veröffentlichen, zu verteilen, Unterlizenzen zu gewähren und/oder zu verkaufen, und Personen, denen die Software zur Verfügung gestellt wird, dies zu erlauben, unter den folgenden Bedingungen:
-
-Die obige Urheberrechtsbenachrichtigung und diese Erlaubnisbenachrichtigung müssen in allen Kopien oder wesentlichen Teilen der Software enthalten sein.
-
-DIE SOFTWARE WIRD "WIE SIE IST" BEREITGESTELLT, OHNE JEGLICHE GARANTIE, AUSDRÜCKLICH ODER STILLSCHWEIGEND, EINSCHLIESSLICH, ABER NICHT BESCHRÄNKT AUF, DIE GARANTIEN DER MARKTGÄNGIGKEIT, DER EIGNUNG FÜR EINEN BESTIMMTEN ZWECK UND DER NICHTVERLETZUNG. IN KEINEM FALL SIND DIE AUTOREN ODER URHEBERRECHTSINHABER FÜR JEGLICHE ANSPRÜCHE, SCHÄDEN ODER ANDERE VERPFLICHTUNGEN VERANTWORTLICH, OB AUS VERTRAG, DELIKT ODER ANDERWEITIG, ENTSTANDEN AUS, AUS ODER IN VERBINDUNG MIT DER SOFTWARE ODER DER NUTZUNG ODER ANDEREN HANDLUNGEN MIT DER SOFTWARE.
-
+Lizenz
+Dieses Projekt wird unter der MIT-Lizenz bereitgestellt. Details finden Sie in der LICENSE-Datei. Diese README.md fasst den aktuellen Stand des Projekts und dessen Funktionsweise zusammen. Nutzen Sie die Anweisungen, um das Projekt zu installieren, anzupassen und bei Bedarf zu erweitern.
