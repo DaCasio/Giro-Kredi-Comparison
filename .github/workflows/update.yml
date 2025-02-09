@@ -1,35 +1,53 @@
-# .github/workflows/update.yml
-name: Daily Run
+name: Daily Balance Check
 
 on:
   schedule:
-    - cron: '0 6 * * *'  # 06:00 UTC
+    - cron: '0 6 * * *'  # Täglich um 06:00 UTC
   workflow_dispatch:
 
 jobs:
-  execute:
+  compare-balances:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
+    - name: Checkout Code
+      uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
 
-      - name: Install Dependencies
-        run: |
-          pip install --no-cache-dir numpy==1.26.4 pandas==2.0.3
+    - name: Install Dependencies
+      run: |
+        pip install --no-cache-dir numpy==1.26.4 pandas==2.0.3
 
-      - name: Run Comparison
-        env:
-          LOAN_BALANCE: ${{ secrets.LOAN_BALANCE }}
-        run: python compare_balances.py
+    - name: Run Comparison
+      env:
+        LOAN_BALANCE: ${{ secrets.LOAN_BALANCE }}
+      run: |
+        python -c "import os; from compare_balances import get_target_month; result = get_target_month(float(os.environ['LOAN_BALANCE'])); print(f'Ergebnis: {result}')"
+        if not os.path.exists('lametric.json'):
+          with open('lametric.json', 'w') as f:
+            json.dump({"frames": [{"text": "Keine Daten", "icon": "i17911"}]}, f)
 
-      - name: Commit Result
-        run: |
-          git config --global user.name "GitHub Bot"
-          git config --global user.email "gh-bot@noreply.com"
-          git add lametric.json
-          git commit -m "Auto-update $(date +'%Y-%m-%d')" || exit 0
-          git push
+    - name: Check File Existence
+      id: check_file
+      run: |
+        if [ -f lametric.json ]; then
+          echo "exists=true" >> $GITHUB_OUTPUT
+        else
+          echo "exists=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Debug Directory
+      run: ls -la
+
+    - name: Commit Changes
+      if: steps.check_file.outputs.exists == 'true'
+      run: |
+        git config --global user.name "GitHub Bot"
+        git config --global user.email "gh-bot@noreply.com"
+        git add lametric.json
+        git commit -m "Auto-update $(date +'%Y-%m-%d')" || exit 0
+        git push
