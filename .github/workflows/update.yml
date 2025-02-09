@@ -26,10 +26,7 @@ jobs:
       env:
         LOAN_BALANCE: ${{ secrets.LOAN_BALANCE }}
       run: |
-        python -c "import os; from compare_balances import get_target_month; result = get_target_month(float(os.environ['LOAN_BALANCE'])); print(f'Ergebnis: {result}')"
-        if not os.path.exists('lametric.json'):
-          with open('lametric.json', 'w') as f:
-            json.dump({"frames": [{"text": "Keine Daten", "icon": "i17911"}]}, f)
+        python compare_balances.py
 
     - name: Check File Existence
       id: check_file
