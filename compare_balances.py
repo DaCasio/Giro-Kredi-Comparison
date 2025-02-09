@@ -1,13 +1,12 @@
-# compare_balances.py (AKTUALISIERT)
-from extract_data import extract_data
+# compare_balances.py
+import json
 
-def get_target_month(loan_balance):
-    months, balances = extract_data()
-    
-    if not len(months) or not len(balances):
-        return "Datenfehler"
-    
-    for idx, balance in enumerate(balates):
-        if balance > loan_balance:
-            return months[idx]
-    return "Nicht vorhersagbar"
+# ... existierender Code ...
+
+with open('lametric.json', 'w') as f:
+    json.dump(output, f)
+
+# Fallback, falls kein Monat gefunden
+if not os.path.exists('lametric.json'):
+    with open('lametric.json', 'w') as f:
+        json.dump({"frames": [{"text": "Keine Daten", "icon": "i17911"}]}, f)
