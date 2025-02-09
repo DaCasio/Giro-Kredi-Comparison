@@ -2,7 +2,7 @@ name: Daily Update
 
 on:
   schedule:
-    - cron: '0 6 * * *'
+    - cron: '0 6 * * *'  # Täglich 06:00 UTC
   workflow_dispatch:
 
 jobs:
@@ -10,23 +10,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Python Setup
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-          
-      - name: Force numpy version
-        run: pip install numpy==1.26.4
-          
+
       - name: Install Dependencies
-        run: pip install -r requirements.txt
-        
+        run: |
+          pip install numpy==1.26.4
+          pip install -r requirements.txt
+
       - name: Run Comparison
         env:
           LOAN_BALANCE: ${{ secrets.LOAN_BALANCE }}
         run: python compare_balances.py
-        
+
       - name: Commit Changes
         run: |
           git config --global user.name "GitHub Bot"
