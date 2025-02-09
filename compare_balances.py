@@ -1,6 +1,7 @@
 import json
 import os
 from extract_data import extract_data
+from update_loan import darlehens_entwicklung
 
 def get_target_month(loan_balance):
     months, balances = extract_data()
@@ -15,9 +16,9 @@ def get_target_month(loan_balance):
 
 if __name__ == "__main__":
     try:
-        current_loan = float(os.environ['LOAN_BALANCE'])
-    except ValueError:
-        print("Fehler: LOAN_BALANCE muss eine Zahl sein")
+        current_loan = darlehens_entwicklung(date.today())
+    except Exception as e:
+        print(f"Fehler beim Berechnen der Restschuld: {str(e)}")
         current_loan = 0  # Fallback-Wert
     
     result = get_target_month(current_loan)
