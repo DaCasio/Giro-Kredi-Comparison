@@ -32,7 +32,7 @@ if __name__ == "__main__":
     output = {
         "frames": [
             {
-                "text": f"Kontoüberhang: {result}",
+                "text": f"{result}",
                 "icon": "i17911"
             }
         ]
