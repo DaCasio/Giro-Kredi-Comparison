@@ -1,0 +1,8 @@
+# Annahme: `current_loan_balance` ist der aktuelle Darlehensstand aus `update_loan.py`
+current_loan_balance = 10000  # Beispielwert
+
+# Finden des ersten Monats, in dem der Kontostand den Darlehensstand übersteigt
+for i, balance in enumerate(monthly_balances):
+    if balance > current_loan_balance:
+        print(f"Der Kontostand übersteigt den Darlehensstand im Monat: {monthly_names[i]}")
+        break
