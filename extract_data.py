@@ -4,19 +4,15 @@ def extract_data():
     url = "https://docs.google.com/spreadsheets/d/1syH5ntimv_5juHGOZo0LUgLO1Jk2kEQjhno8Kl21jzw/export?format=csv"
     try:
         # CSV-Daten laden
-        data = pd.read_csv(url)
+        data = pd.read_csv(url, header=None)  # Keine Kopfzeile verwenden
         
         # Überprüfen, ob mindestens zwei Zeilen vorhanden sind
         if data.shape[0] < 2:
             raise ValueError("Google Sheet hat weniger als 2 Zeilen")
         
-        # Extrahieren der Monatsnamen und Kontostände
-        months = data.iloc[0].values
-        balances = data.iloc[1].values
-        
-        # Sicherstellen, dass keine NaN-Werte vorhanden sind
-        if any(pd.isna(months)) or any(pd.isna(balances)):
-            raise ValueError("Google Sheet enthält ungültige oder fehlende Werte")
+        # Extrahieren der Monatsnamen und Kontostände aus Spalte A
+        months = data.iloc[0, 0].split(",")  # A1: Monatsnamen durch Kommas getrennt
+        balances = [float(value) for value in data.iloc[1, 0].split(",")]  # A2: Kontostände durch Kommas getrennt
         
         return months, balances
     except Exception as e:
