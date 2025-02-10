@@ -35,7 +35,7 @@ if __name__ == "__main__":
         "frames": [
             {
                 "text": f"{result}",
-                "icon": "i616"  # Kalender-Icon
+                "icon": "i616"  # Euro-Symbol
             }
         ]
     }
