@@ -35,7 +35,7 @@ if __name__ == "__main__":
         "frames": [
             {
                 "text": f"{result}",
-                "icon": "i616"  # Euro-Symbol
+                "icon": "544"  # Done Check
             }
         ]
     }
@@ -45,7 +45,7 @@ if __name__ == "__main__":
         "frames": [
             {
                 "text": f"{int(summe)}€",
-                "icon": "i616"  # Euro-Symbol
+                "icon": "3769"  # Arrow
             }
         ]
     }
