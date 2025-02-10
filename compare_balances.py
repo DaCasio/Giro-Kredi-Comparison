@@ -6,7 +6,7 @@ from update_loan import darlehens_entwicklung
 def get_target_month(loan_balance):
     months, balances = extract_data()
     
-    # Statt "if not months or not balances:" nun:
+    # Überprüfen, ob gültige Daten vorliegen
     if len(months) == 0 or len(balances) == 0:
         return "Datenfehler"
     
@@ -26,14 +26,16 @@ if __name__ == "__main__":
         current_loan = darlehens_entwicklung(date.today())
     except Exception as e:
         print(f"Fehler beim Berechnen der Restschuld: {str(e)}")
-        current_loan = 0
+        current_loan = 0  # Fallback-Wert
+    
     result = get_target_month(current_loan)
     
+    # JSON-Ausgabe für LaMetric erstellen
     output = {
         "frames": [
             {
                 "text": f"{result}",
-                "icon": "i17911"
+                "icon": "i616"  # Kalender-Icon
             }
         ]
     }
