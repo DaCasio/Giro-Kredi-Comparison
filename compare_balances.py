@@ -8,7 +8,7 @@ def get_target_month(loan_balance):
     
     # Überprüfen, ob gültige Daten vorliegen
     if len(months) == 0 or len(balances) == 0:
-        return "Datenfehler"
+        return "Datenfehler", 0
     
     print(f"DEBUG: Loan balance to compare: {loan_balance}")
     print(f"DEBUG: Balances from sheet: {balances}")
@@ -17,9 +17,9 @@ def get_target_month(loan_balance):
     for idx, balance in enumerate(balances):
         print(f"DEBUG: Comparing balance {balance} with loan balance {loan_balance}")
         if balance > loan_balance:
-            return months[idx]
+            return months[idx], balance
     
-    return "Nicht vorhersagbar"
+    return "Nicht vorhersagbar", 0
 
 if __name__ == "__main__":
     try:
@@ -28,10 +28,10 @@ if __name__ == "__main__":
         print(f"Fehler beim Berechnen der Restschuld: {str(e)}")
         current_loan = 0  # Fallback-Wert
     
-    result = get_target_month(current_loan)
+    result, summe = get_target_month(current_loan)
     
-    # JSON-Ausgabe für LaMetric erstellen
-    output = {
+    # JSON-Ausgabe für den Monat
+    output_monat = {
         "frames": [
             {
                 "text": f"{result}",
@@ -40,5 +40,18 @@ if __name__ == "__main__":
         ]
     }
     
-    with open('lametric.json', 'w') as f:
-        json.dump(output, f)
+    # JSON-Ausgabe für die Summe
+    output_summe = {
+        "frames": [
+            {
+                "text": f"{int(summe)}€",
+                "icon": "i616"  # Euro-Symbol
+            }
+        ]
+    }
+    
+    with open('lametric-monat.json', 'w') as f:
+        json.dump(output_monat, f)
+    
+    with open('lametric-summe.json', 'w') as f:
+        json.dump(output_summe, f)
