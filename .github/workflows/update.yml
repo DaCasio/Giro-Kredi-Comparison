@@ -20,7 +20,7 @@ jobs:
 
     - name: Install Dependencies
       run: |
-        pip install --no-cache-dir numpy==1.26.4 pandas==2.0.3
+        pip install --no-cache-dir pandas numpy
 
     - name: Run Comparison
       run: |
