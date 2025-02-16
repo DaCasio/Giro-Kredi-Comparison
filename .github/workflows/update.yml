@@ -30,7 +30,7 @@ jobs:
     - name: Check File Existence
       id: check_file
       run: |
-        if [ -f lametric-monat.json ] && [ -f lametric-summe.json ]; then
+        if [ -f lametric.json ]; then
           echo "exists=true" >> $GITHUB_OUTPUT
         else
           echo "exists=false" >> $GITHUB_OUTPUT
@@ -44,6 +44,6 @@ jobs:
       run: |
         git config --global user.name "GitHub Bot"
         git config --global user.email "gh-bot@noreply.com"
-        git add lametric-monat.json lametric-summe.json
+        git add lametric.json
         git commit -m "Auto-update $(date +'%Y-%m-%d')" || exit 0
         git push
