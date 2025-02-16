@@ -96,15 +96,17 @@ if __name__ == "__main__":
                 months_count, days_count = 0, 0
             else:
                 months_count, days_count = calculate_months_and_days_exact(current_date, target_date)
-            # Ausgabe: oberste Zeile der Frame enthält den Zielmonat, darunter der Countdown.
-            frame_text = f"{result}\n{months_count} Monate, {days_count} Tage"
+                # Anpassen: Einen Tag hinzufügen, sodass 01.03.2027 als 24 Monate und 14 Tage statt 13 Tage erscheint.
+                days_count += 1
+            # Abgekürzte Ausgabe im Format "M{Monate} T{Tage}"
+            frame_text = f"{result}\nM{months_count} T{days_count}"
         except Exception as e:
             print("Fehler beim Berechnen der Zeitdifferenz:", e)
             frame_text = result
     else:
         frame_text = result
     
-    # JSON-Ausgabe: Frame 1 enthält den Monatsstring inkl. Countdown, Frame 2 den Wert.
+    # JSON-Ausgabe: Frame 1 enthält den Monatsstring inkl. Countdown (abgekürzt), Frame 2 den Wert.
     output = {
         "frames": [
             {
