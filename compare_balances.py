@@ -22,11 +22,10 @@ def get_target_month(loan_balance):
     
     return "Nicht vorhersagbar", 0
 
-# Helper-Funktionen zur Umwandlung des Monatsstrings in ein Datum
 def parse_month(month_str):
     """
     Wandelt einen Monatsstring, z. B. "Jan25" oder "Mär27", in ein date-Objekt um.
-    Es wird davon ausgegangen, dass der Monatsname immer dreistellig und die Jahreszahl immer zweistellig ist.
+    Es wird davon ausgegangen, dass der Monatsname immer dreistellig und die Jahreszahl zweistellig ist.
     """
     month_part = month_str[:3]
     year_part = month_str[3:]
@@ -86,8 +85,6 @@ if __name__ == "__main__":
     
     result, summe = get_target_month(current_loan)
     
-    # Berechnung der Zeitdifferenz (in vollen Monaten und Tagen) bis zum Ereignis,
-    # sofern ein gültiger Monatsstring vorliegt.
     if result not in ["Datenfehler", "Nicht vorhersagbar"]:
         try:
             target_date = parse_month(result)
@@ -96,26 +93,28 @@ if __name__ == "__main__":
                 months_count, days_count = 0, 0
             else:
                 months_count, days_count = calculate_months_and_days_exact(current_date, target_date)
-                # Anpassen: Einen Tag hinzufügen, sodass 01.03.2027 als 24 Monate und 14 Tage statt 13 Tage erscheint.
+                # Einen zusätzlichen Tag hinzufügen, damit z. B. aus 13 Tagen 14 werden
                 days_count += 1
-            # Abgekürzte Ausgabe im Format "M{Monate} T{Tage}"
-            frame_text = f"{result}\nM{months_count} T{days_count}"
+            countdown_text = f"M{months_count} T{days_count}"
         except Exception as e:
             print("Fehler beim Berechnen der Zeitdifferenz:", e)
-            frame_text = result
+            countdown_text = ""
     else:
-        frame_text = result
+        countdown_text = ""
     
-    # JSON-Ausgabe: Frame 1 enthält den Monatsstring inkl. Countdown (abgekürzt), Frame 2 den Wert.
     output = {
         "frames": [
             {
-                "text": frame_text,
-                "icon": "i11386"  # Icon ID für den Zielmonat plus Countdown
+                "text": result,
+                "icon": "i11386"
+            },
+            {
+                "text": countdown_text,
+                "icon": "i11386"
             },
             {
                 "text": f"{int(summe)}€",
-                "icon": "i66330"  # Icon ID für den Betrag
+                "icon": "i66330"
             }
         ]
     }
