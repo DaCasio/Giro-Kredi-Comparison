@@ -30,28 +30,19 @@ if __name__ == "__main__":
     
     result, summe = get_target_month(current_loan)
     
-    # JSON-Ausgabe für den Monat
-    output_monat = {
+    # JSON-Ausgabe für den Monat und die Summe
+    output = {
         "frames": [
             {
                 "text": f"{result}",
-                "icon": "i544"  # Done Check
-            }
-        ]
-    }
-    
-    # JSON-Ausgabe für die Summe
-    output_summe = {
-        "frames": [
+                "icon": "i11386"  # Icon ID für den Monat
+            },
             {
                 "text": f"{int(summe)}€",
-                "icon": "i3769"  # Arrow
+                "icon": "i66330"  # Icon ID für den Wert
             }
         ]
     }
     
-    with open('lametric-monat.json', 'w') as f:
-        json.dump(output_monat, f)
-    
-    with open('lametric-summe.json', 'w') as f:
-        json.dump(output_summe, f)
+    with open('lametric.json', 'w') as f:
+        json.dump(output, f)
