@@ -43,6 +43,3 @@ if __name__ == "__main__":
             }
         ]
     }
-    
-    with open('lametric.json', 'w') as f:
-        json.dump(output, f)
