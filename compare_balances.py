@@ -106,15 +106,15 @@ if __name__ == "__main__":
         "frames": [
             {
                 "text": result,
-                "icon": "i11386"
+                "icon": "11386"
             },
             {
                 "text": countdown_text,
-                "icon": "i11386"
+                "icon": "11386"
             },
             {
                 "text": f"{int(summe)}€",
-                "icon": "i66330"
+                "icon": "66330"
             }
         ]
     }
