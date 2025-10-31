@@ -8,7 +8,7 @@ darlehen = {
     'start_date': date(2023, 8, 15),
     'end_date': date(2030, 3, 15),
     'start_kapital': Decimal('32000.00'),
-    'monatsrate': Decimal('497.71'),
+    'monatsrate': Decimal('497.71'),  # Fixe Annuitätenrate
     'zins_satz': Decimal('6.74') / 100
 }
 
@@ -19,8 +19,9 @@ def berechne_monatliche_zinsen(kapital: Decimal) -> Decimal:
 
 def berechne_stichtagswerte() -> dict:
     """
-    Berechnet die echten Kontostände am 15. jeden Monats
-    bis zum Laufzeitende oder bis Restschuld = 0
+    Berechnet die echten Kontostände am 15. jeden Monats.
+    Bei Annuitätendarlehen: Rate = Zinsen + Tilgung
+    Die Tilgung = Rate - Zinsen wird vom Kapital abgezogen.
     """
     stichtage = {}
     current_date = darlehen['start_date']
@@ -36,12 +37,14 @@ def berechne_stichtagswerte() -> dict:
         else:
             current_date = date(current_date.year, current_date.month + 1, 15)
         
-        # Monatszinsen aufschlagen
+        # Monatszinsen berechnen
         monatszinsen = berechne_monatliche_zinsen(kapital)
-        kapital += monatszinsen
         
-        # Rate abziehen
-        kapital -= darlehen['monatsrate']
+        # Tilgung = Rate - Zinsen
+        tilgung = darlehen['monatsrate'] - monatszinsen
+        
+        # Kapital um Tilgung reduzieren (NICHT um die gesamte Rate!)
+        kapital -= tilgung
         kapital = kapital.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
         
         # Stichtag speichern
@@ -123,22 +126,33 @@ if __name__ == "__main__":
     with open("darlehen.json", "w") as f:
         json.dump(generiere_json(), f, indent=2, ensure_ascii=False)
     
-    # Validierung mit echten Bankdaten
+    print("=== VALIDIERUNG MIT ECHTEN BANKDATEN ===\n")
+    
+    # Test: Echte Stichtage (15. des Monats)
     test_datum_okt = date(2025, 10, 15)
     wert_okt = darlehens_entwicklung(test_datum_okt)
+    zinsen_okt = berechne_monatliche_zinsen(wert_okt)
+    tilgung_okt = darlehen['monatsrate'] - zinsen_okt
     print(f"15.10.2025: {wert_okt:.2f}€ (Soll: 22.758,74€)")
+    print(f"  → Zinsen: {zinsen_okt:.2f}€, Tilgung: {tilgung_okt:.2f}€")
     
     test_datum_nov = date(2025, 11, 15)
     wert_nov = darlehens_entwicklung(test_datum_nov)
+    zinsen_nov = berechne_monatliche_zinsen(wert_nov)
+    tilgung_nov = darlehen['monatsrate'] - zinsen_nov
     print(f"15.11.2025: {wert_nov:.2f}€ (Soll: 22.388,90€)")
+    print(f"  → Zinsen: {zinsen_nov:.2f}€, Tilgung: {tilgung_nov:.2f}€")
     
     test_datum_dez = date(2025, 12, 15)
     wert_dez = darlehens_entwicklung(test_datum_dez)
+    zinsen_dez = berechne_monatliche_zinsen(wert_dez)
+    tilgung_dez = darlehen['monatsrate'] - zinsen_dez
     print(f"15.12.2025: {wert_dez:.2f}€ (Soll: 22.016,98€)")
+    print(f"  → Zinsen: {zinsen_dez:.2f}€, Tilgung: {tilgung_dez:.2f}€")
     
-    # Assertions
+    # Assertions mit 1€ Toleranz
     assert abs(wert_okt - Decimal('22758.74')) < Decimal('1.00'), f"Fehler Oktober: {wert_okt}€"
     assert abs(wert_nov - Decimal('22388.90')) < Decimal('1.00'), f"Fehler November: {wert_nov}€"
     assert abs(wert_dez - Decimal('22016.98')) < Decimal('1.00'), f"Fehler Dezember: {wert_dez}€"
     
-    print("✓ Alle Validierungen erfolgreich!")
+    print("\n✓ Alle Validierungen erfolgreich!")
