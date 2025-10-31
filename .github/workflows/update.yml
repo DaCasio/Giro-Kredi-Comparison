@@ -20,7 +20,7 @@ jobs:
 
     - name: Install Dependencies
       run: |
-        pip install --no-cache-dir pandas numpy
+        pip install --no-cache-dir -r requirements.txt
 
     - name: Run Comparison
       run: |
@@ -44,6 +44,6 @@ jobs:
       run: |
         git config --global user.name "GitHub Bot"
         git config --global user.email "gh-bot@noreply.com"
-        git add lametric.json darlehen.json
+        git add lametric.json
         git commit -m "Auto-update $(date +'%Y-%m-%d')" || exit 0
         git push
