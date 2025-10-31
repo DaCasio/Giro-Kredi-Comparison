@@ -5,9 +5,9 @@ import json
 getcontext().prec = 8
 
 darlehen = {
-    'start_date': date(2025, 1, 15),
+    'start_date': date(2023, 8, 15),
     'end_date': date(2030, 3, 15),
-    'start_kapital': Decimal('25995.73'),
+    'start_kapital': Decimal('32000.00'),
     'monatsrate': Decimal('503.16'),
     'zins_satz': Decimal('6.74') / 100,
     'zinsmethode': '30/360'
@@ -39,7 +39,7 @@ def generiere_json():
                 "text": f"{int(aktueller_stand)}€",
                 "icon": "616",
                 "goalData": {
-                    "start": 25996,
+                    "start": 32000,
                     "current": int(aktueller_stand),
                     "end": 0,
                     "unit": "€"
@@ -52,7 +52,7 @@ if __name__ == "__main__":
     with open("darlehen.json", "w") as f:
         json.dump(generiere_json(), f, indent=2, ensure_ascii=False)
     
-    # Validierung NUR am Stichtag
-    if date.today() == date(2025, 2, 15):
-        aktueller_wert = darlehens_entwicklung(date.today())
-        assert 25642 <= aktueller_wert <= 25646, f"Abweichung: {aktueller_wert}€ statt 25644€"
+    # Validierung mit bekanntem Wert vom 15.09.2023
+    if date.today() == date(2023, 9, 15):
+        aktueller_wert = darlehens_entwicklung(date(2023, 9, 15))
+        assert 31502 <= aktueller_wert <= 31503, f"Abweichung: {aktueller_wert}€ statt 31502€"
